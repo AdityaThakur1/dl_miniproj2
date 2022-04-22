@@ -1,0 +1,31 @@
+[W socket.cpp:401] [c10d] The server socket has failed to bind to [::]:23456 (errno: 98 - Address already in use).
+[W socket.cpp:401] [c10d] The server socket has failed to bind to 0.0.0.0:23456 (errno: 98 - Address already in use).
+[E socket.cpp:435] [c10d] The server socket has failed to listen on any local network address.
+Starting process on GPU: 0
+Traceback (most recent call last):
+  File "/scratch/at4932/projects/cs294-158-ssl/train_self_supervised_task.py", line 335, in <module>
+    main()
+  File "/scratch/at4932/projects/cs294-158-ssl/train_self_supervised_task.py", line 58, in main
+    mp.spawn(main_worker, nprocs=ngpus, args=(ngpus, args), join=True)
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 240, in spawn
+    return start_processes(fn, args, nprocs, join, daemon, start_method='spawn')
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 198, in start_processes
+    while not context.join():
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 160, in join
+    raise ProcessRaisedException(msg, error_index, failed_process.pid)
+torch.multiprocessing.spawn.ProcessRaisedException: 
+
+-- Process 0 terminated with the following error:
+Traceback (most recent call last):
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/multiprocessing/spawn.py", line 69, in _wrap
+    fn(i, *args)
+  File "/scratch/at4932/projects/cs294-158-ssl/train_self_supervised_task.py", line 65, in main_worker
+    dist.init_process_group(backend='nccl', init_method=f'tcp://localhost:{args.port}',
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/distributed/distributed_c10d.py", line 595, in init_process_group
+    store, rank, world_size = next(rendezvous_iterator)
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/distributed/rendezvous.py", line 186, in _tcp_rendezvous_handler
+    store = _create_c10d_store(result.hostname, result.port, rank, world_size, timeout)
+  File "/scratch/at4932/projects/dlenv/lib/python3.10/site-packages/torch/distributed/rendezvous.py", line 160, in _create_c10d_store
+    return TCPStore(
+RuntimeError: The server socket has failed to listen on any local network address. The server socket has failed to bind to [::]:23456 (errno: 98 - Address already in use). The server socket has failed to bind to 0.0.0.0:23456 (errno: 98 - Address already in use).
+
