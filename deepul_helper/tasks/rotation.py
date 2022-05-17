@@ -74,6 +74,52 @@ class RotationPrediction(nn.Module):
         targets = targets.contiguous().view(-1)
         return images_batch, targets
 
+# ------------------------- CustomNetwork
+class CustomNetwork(nn.Module):
+    metrics = ['Loss', 'Acc1']
+    metrics_fmt = [':.4e', ':6.2f']
+
+    def __init__(self, dataset, n_classes):
+        super().__init__()
+        if dataset == 'cifar10':
+            self.model = NetworkInNetwork()
+            self.latent_dim = 192 * 8 * 8
+            self.feat_layer = 'conv2'
+        elif 'imagenet' in dataset:
+            self.model = AlexNet()
+            self.latent_dim = 256 * 13 * 13
+            self.feat_layer = 'conv5'
+        else:
+            raise Exception('Unsupported dataset:', dataset)
+        self.dataset = dataset
+        self.n_classes = n_classes
+
+    def construct_classifier(self):
+        if self.dataset == 'cifar10':
+            classifier = nn.Sequential(
+                nn.BatchNorm1d(self.latent_dim, affine=False),
+                nn.Linear(self.latent_dim, self.n_classes)
+            )
+        elif 'imagenet' in self.dataset:
+            classifier = nn.Sequential(
+                nn.AdaptiveMaxPool2d((6, 6)),
+                nn.BatchNorm2d(256, affine=False),
+                nn.Flatten(),
+                nn.Linear(256 * 6 * 6, self.n_classes)
+            )
+        else:
+            raise Exception('Unsupported dataset:', dataset)
+        return classifier
+
+    def forward(self, images):
+        batch_size = images.shape[0]
+        logits = self.model(images)
+        return logits 
+
+    def encode(self, images, flatten=True):
+        zs = self.model(images, out_feat_keys=(self.feat_layer,))
+        return zs.flatten(start_dim=1)
+
 
 
 # Code borrowed from https://github.com/gidariss/FeatureLearningRotNet

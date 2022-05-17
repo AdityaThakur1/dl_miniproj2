@@ -5,3 +5,5 @@
 *.rar
 *.csv
 *.env
+*.pyc
+.DS_Store
