@@ -16,3 +16,13 @@ In this project we aim to combine the a forementioned motivations and develop ne
 - ssl_multimodal.ipynb : Code for inference on multi-modal data
 - run : folder containing run configs, sbatch files and output files 
 - results : folder containing results from all training
+
+# Training
+```
+# Start training with: 
+python train_self_supervised_task.py -d <dataset> -t <pretext task> -e <number of epochs>
+
+e.g.
+python train_self_supervised_task.py -d cifar10 -t rotation -e 200
+```
+
